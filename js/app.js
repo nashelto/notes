@@ -3,47 +3,94 @@
 //@codekit-prepend('vendor/jquery/jquery.js')
 //@codekit-prepend('vendor/angular/angular.js')
 //@codekit-prepend('vendor/angular/angular-route.js')
+//@codekit-prepend('vendor/angular/angular-sanitize.js')
 //@codekit-prepend('vendor/bootstrap/bootstrap.js')
 //@codekit-prepend('vendor/bootstrap/summernote.js')
 //@codekit-prepend('vendor/jquery/chosen.jquery.js')
 
 
 
-var app = angular.module('app', ['ngRoute']);
+var app = angular.module('app', ['ngRoute', 'ngSanitize']);
 
 
 app.factory('NotesService', function(){
 
 	var notes = [
-		{ id: 1, pageId:1, title: 'Note Title', body: '<p>This is a <strong>note</strong>. Love it</p>' },
-		{ id: 1, pageId:2, title: 'Note Title', body: '<p>This is a <strong>note</strong>. Love it</p>' },
-		{ id: 1, pageId:1, title: 'Note Title', body: '<p>This is a <strong>note</strong>. Love it</p>' },
-		{ id: 1, pageId:3, title: 'Note Title', body: '<p>This is a <strong>note</strong>. Love it</p>' },
-		{ id: 1, pageId:2, title: 'Note Title', body: '<p>This is a <strong>note</strong>. Love it</p>' },
-		{ id: 1, pageId:1, title: 'Note Title', body: '<p>This is a <strong>note</strong>. Love it</p>' }
+		{ id: 1, pageId:1, title: 'Note 1', body: '<p>This is a <strong>note 1</strong>. Love it</p>' },
+		{ id: 2, pageId:2, title: 'Note 2', body: '<p>This is a <strong>note 2</strong>. Love it</p>' },
+		{ id: 3, pageId:1, title: 'Note 3', body: '<p>This is a <strong>note 3</strong>. Love it</p>' },
+		{ id: 4, pageId:3, title: 'Note 4', body: '<p>This is a <strong>note 4</strong>. Love it</p>' },
+		{ id: 5, pageId:2, title: 'Note 5', body: '<p>This is a <strong>note 5</strong>. Love it</p>' },
+		{ id: 6, pageId:1, title: 'Note 6', body: '<p>This is a <strong>note 6</strong>. Love it</p>' }
 	];
+
+
+	/**
+	 * This function simply returns our array of note Objects
+	 * @return {array} an array of note objects to be returned
+	 */
+	var getNotes = function(){
+		return notes;
+	};
+
+
+	/**
+	 * This function takes a note id, finds that note in our list of notes
+	 * creates a copy of it, updates it's id and pushes it into our list of notes
+	 * @param  {integer} noteId the id property of the note object in our collection
+	 * @return {undefined} Notheing is returned frmo this method
+	 */
+	var duplicateNote = function(noteId){
+		var newNote = _.filter(notes, function(note){ return noteId == note.id });
+		newNote = angular.copy(newNote[0]);
+		newNote.id = notes.length + 1;
+		notes.push(newNote);
+	}
+
+	/**
+	 * This function destroys a note with the id given
+	 * @param  {integer} noteId the id property of the note to delete
+	 * @return {undefined} this funciton doesn't return anything
+	 */
+	var deleteNote = function(noteId){
+		notes = _.filter(notes, function(note){ return noteId != note.id });
+	}
+
+
+	return {
+		getNotes: getNotes,
+		duplicateNote: duplicateNote,
+		deleteNote: deleteNote
+	};
 
 });
 
 
+
+
 app.factory('PagesService', function(){
 	var pages = [
-		{ id: 1, title: 'My Cool Page' },
-		{ id: 2, title: 'Another Cool Page' },
-		{ id: 3, title: 'Thrid Page' }
+		{ id: 1, title: 'My Cool Page', body: '<p>Here are notes about blah blah blah...yeah</p>' },
+		{ id: 2, title: 'Another Cool Page', body: '<p>Here are notes about blah blah blah...yeah</p>' },
+		{ id: 3, title: 'Thrid Page', body: '<p>Here are notes about blah blah blah...yeah</p>' }
 	];
 
 	var getPages = function(){
 		return pages;
 	}
 
-	var getPage = function(id){
-		//use underscore to return a filtered page list here
+
+	return {
+		getPages: getPages
 	}
+
 });
 
 
-app.config(function($routeProvider){
+
+
+//our route provider
+app.config(['$routeProvider', function($routeProvider){
 	$routeProvider
 		.when('/', {
 			controller: 'HomeCtrl',
@@ -64,33 +111,48 @@ app.config(function($routeProvider){
 		.otherwise({
 			redirectTo: '/'
 		});
-});
+}]);
 
 
 
-app.controller('HomeCtrl', function($scope, PagesService, NotesService){
-
-});
 
 
-app.controller('PageCtrl', function($scope){
-
-});
 
 
-app.controller('NoteCtrl', function($scope){
 
-});
+app.controller('HomeCtrl', ['$scope', 'PagesService', 'NotesService', function($scope, PagesService, NotesService){
+	$scope.pages = PagesService.getPages();
+	$scope.notes = NotesService.getNotes();
+	$scope.duplicateNote = function(noteId){
+		NotesService.duplicateNote(noteId);
+	}
+	$scope.deleteNote = function(noteId){
+		NotesService.deleteNote(noteId);
+	}
+}]);
 
 
-app.controller('NewNoteCtrl', function($scope){
+app.controller('PageCtrl', ['$scope', function($scope){
+	
+}]);
 
-});
+
+app.controller('NoteCtrl', ['$scope', function($scope){
+	
+}]);
+
+
+app.controller('NewNoteCtrl', ['$scope', function($scope){
+	
+}]);
+
+
+
 
 
 
 //this directive bootstraps the wysiwyg component of the app
-app.directive('wysiwyg', function(){
+app.directive('wysiwyg', [function(){
 
 	//bind our actions and set up our plugins
 	var linker = function(scope, element, attrs){
@@ -130,4 +192,4 @@ app.directive('wysiwyg', function(){
 		templateUrl: 'views/wysiwyg-template.html'
 	}
 
-});
+}]);

@@ -1,3 +1,38 @@
-Notes home...
 
-list all notes
+
+<div class="panel panel-primary" ng-repeat="page in pages">
+	<div class="panel-heading">
+		<span class="fa fa-folder-open-o"></span> <strong>{{ page.title }}</strong>
+		<a href="#" class="btn btn-default btn-xs pull-right">+ Add a note</a>	
+	</div>
+	
+	<div class="panel-body">
+	<!--the body of the page panel-->
+	
+			
+				<div class="col-lg-4 col-md-6 col-sm-6" ng-repeat="note in notes | filter:{pageId:page.id}">
+					<div class="panel panel-default">
+						<div class="panel-heading">
+							<span class="fa fa-file-text-o"></span> <strong>{{ note.title }}</strong>
+							
+							<!--Dropdown Button-->
+							<div class="btn-group pull-right">
+						    <button type="button" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown"><i class="fa fa-cog"></i> <span class="caret"></span>
+						    </button>
+						    <ul class="dropdown-menu">
+						      <li><a href="#"><i class="fa fa-edit"></i> Edit Note</a></li>
+						      <li ng-click="duplicateNote(note.id)"><a href="#"><i class="fa fa-copy"></i> Duplicate Note</a></li>
+						      <li ng-click="deleteNote(note.id)"><a href="#"><i class="fa fa-trash-o"></i> Delete Note</a></li>
+						    </ul>
+						  </div>
+							
+							<!-- <a href="#" class="btn btn-primary btn-xs pull-right"><i class="fa fa-edit"></i> Edit</a>
+							<a href="#" class="btn btn-danger btn-xs pull-right"><i class="fa fa-trash-o"></i></a> -->
+						</div>
+						<div class="panel-body" ng-bind-html="note.body"></div>
+					</div>
+				</div>
+		
+		
+	</div><!--END panel-body-->
+</div><!--END panel-->
