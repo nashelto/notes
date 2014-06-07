@@ -1,6 +1,8 @@
 Simple Note Taking App
 ======================
 
+##THIS IS A WORK IN PROGRESS...aka, it's note done and it sucks :)
+
 Uses:
  - Angular JS (+ ngRoute)
  - jQuery (for now)
